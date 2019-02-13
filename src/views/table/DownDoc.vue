@@ -205,10 +205,10 @@
                 var token = this.token;
                 console.log(startTime);
                 console.log(endTime);
-                if(startTime < endTime) {
-                    window.location.href = "http://sai.bbxxjs.com/extoexl?token=" + token + "&t=" + t + "&st="+startTime+"&et="+endTime;
+                if(startTime > endTime) {
+                    this.$message.error("通话日期非法，请重新选择！");
                 }else {
-                    this.$message.error("日期选择错误");
+                    window.location.href = "http://sai.bbxxjs.com/extoexl?token=" + token + "&t=" + t + "&st="+startTime+"&et="+endTime;
                 }
             },
             formatDate(time) {

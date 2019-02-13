@@ -594,6 +594,16 @@ class Api extends Base
         $filename = date("Ymdhis") . '.xlsx';
         $j = 2;
         $vacant_array = ['does not exist', 'not in service', 'barring of incoming', 'call reminder', 'forwarded', 'number change', 'line fault'];
+        date_default_timezone_set('PRC');
+        $str1 = $starttime." 00:00:00";
+        $str2 = $endtime." 23:59:59";
+        $start = strtotime($str1);
+        $end = strtotime($str2);
+        $today = date('Y-m-d');
+        $str3 = $today." 00:00:00";
+        $str4 = $today." 23:59:59";
+        $today_start = strtotime($str3);
+        $today_end = strtotime($str4);
         foreach ($aids as $aid) {
             $seat = Seat::where("aid", $aid)->select();
             foreach ($seat as $k => $v) {
@@ -608,7 +618,8 @@ class Api extends Base
                     } elseif ($t == "f") {
                         $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->whereBetweenTime('a.calldate', $starttime)->where("b.type", "<>", "a")->where("b.type", "<>", "b")->where('a.state', 10)->where('b.zid', $v["id"])->select();
                     } else {
-                         $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->whereBetweenTime('a.calldate', $starttime)->where("b.type", $t)->where('a.state', 10)->where('b.zid', $v["id"])->select();
+//                         $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->whereBetweenTime('a.calldate', $starttime)->where("b.type", $t)->where('a.state', 10)->where('b.zid', $v["id"])->select();
+                         $cha = CrmUsertype::where("zid",$v["id"])->where("type", $t)->whereBetweenTime("dateline",$start,$end)->select();
                     }
                 } else if (!empty($starttime) || !empty($endtime)) {
                     if ($starttime) {
@@ -627,7 +638,8 @@ class Api extends Base
                     } elseif ($t == "f") {
                         $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->where($where2)->where("b.type", "<>", "a")->where("b.type", "<>", "b")->where('a.state', 10)->where('b.zid', $v["id"])->select();
                     } else {
-                        $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->where($where2)->where("b.type", $t)->where('a.state', 10)->where('b.zid', $v["id"])->select();
+//                        $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->where($where2)->where("b.type", $t)->where('a.state', 10)->where('b.zid', $v["id"])->select();
+                        $cha = CrmUsertype::where("zid", $v["id"])->where("type",$t)->whereBetweenTime("dateline",$start,$end)->select();
                     }
                 } else {
                     if ($t == "d") {
@@ -637,15 +649,18 @@ class Api extends Base
                     } elseif ($t == "f") {
                         $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->whereTime('a.calldate', 'today')->where("b.type", "<>", "a")->where("b.type", "<>", "b")->where('a.state', 10)->where('b.zid', $v["id"])->select();
                     } else {
-                        $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->whereTime('a.calldate', 'today')->where("b.type", $t)->where('a.state', 10)->where('b.zid', $v["id"])->select();
+//                        $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->whereTime('a.calldate', 'today')->where("b.type", $t)->where('a.state', 10)->where('b.zid', $v["id"])->select();
+                        $cha = CrmUsertype::where("zid", $v["id"])->where("type",$t)->whereBetweenTime("dateline",$today_start,$today_end)->select();
                     }
                 }
 
                 foreach ($cha as $v => $k) {
-                    $objPHPExcel->setActiveSheetIndex(0)
-                        //Excel的第A列，uid是你查出数组的键值，下面以此类推
-                        ->setCellValue('A' . $j, $k["number"]);
-                    $j++;
+                    if(!empty($k["number"])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                            //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                            ->setCellValue('A' . $j, $k["number"]);
+                        $j++;
+                    }
                 }
             }
         }
@@ -778,6 +793,7 @@ class Api extends Base
         $oneweekage2 = date("Y-m-d 0:0:0", strtotime("-7 day"));  // 获取格式为2018-12-30 13:26:13
         CrmUseranswer::where("dateline", '<=', $oneweekage1)->delete();
         CrmUsertype::where("dateline", '<=', $oneweekage1)->delete();
+//        CrmUsertype::where("dateline", 'null')->delete();
         $aids = User::where("id", ">", 0)->column("id");
         foreach ($aids as $aid) {
             $zids = Seat::where("aid", $aid)->column("id");
