@@ -30,6 +30,7 @@ Route::any('exlcountdata','index/Api/exlcountdata');
 Route::any('extoexl','index/Api/extoexl');
 Route::any('deleteRecord','index/Api/deleteRecord');
 Route::any('deleteTest','index/Api/deleteTest');
+Route::any('setremarks','index/index/setremarks');
 
 return [
 

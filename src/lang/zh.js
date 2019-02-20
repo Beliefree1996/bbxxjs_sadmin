@@ -41,6 +41,7 @@ export default {
     TwNumberTable: '号码导入',
     wxcrm: '微信管理系统',
     TwDistribute: '号码分配',
+    Manage: '管理',
     IsDownTable: '权限管理',
     CallCharge: '话费管理',
     DownDoc: '统计报表',

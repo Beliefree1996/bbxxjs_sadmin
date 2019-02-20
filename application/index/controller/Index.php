@@ -17,6 +17,7 @@ use app\index\model\Number;
 use app\index\model\Numberpool;
 use app\index\model\CrmMobile;
 use app\index\model\CrmMobilePc;
+use app\index\model\RechargeRemarks;
 use app\index\model\Seat;
 use app\index\model\SeatWx;
 use app\index\model\Task;
@@ -344,7 +345,7 @@ class Index extends Base
 //        $p = input('post.p');
         $username = trim(input('post.name'));
         $token = input('post.token');
-        $sid = Cache::get($token);;
+        $sid = Cache::get($token);
 
 //        if ($s == 1) {
 //            $s = 0;
@@ -373,6 +374,8 @@ class Index extends Base
                 }else{
                     $rs[$v]["callmoney"] = 0;
                 }
+                $syhm = CrmMobile::where("aid",$a["id"])->where("isdel",0)->count();
+                $rs[$v]["syhm"] = $syhm;
             }
             $re['rows']=$rs;
         }else{
@@ -461,7 +464,7 @@ class Index extends Base
     // 分配号码
     public function mobilefp(){
         $token = input('post.token');
-        $sid = Cache::get($token);;
+        $sid = Cache::get($token);
         $pid = input("post.pid");
         $nums = input("post.num");
         $aidlist = input("post.aidlist");
@@ -631,6 +634,22 @@ class Index extends Base
         $res['total'] = Task::where("aid",$aid)->count() + 1;
 
         Ajson('查询成功！','0000',$res);
+    }
+
+    // 提交充值备注信息
+    public function setremarks(){
+        $token = input('post.token');
+        $sid = Cache::get($token);
+        $remarks = input('post.remarks');
+        if(!empty($remarks)) {
+            $data['sid'] = $sid;
+            $data['remarks'] = $remarks;
+            $data['dateline'] = time();
+            RechargeRemarks::insert($data);
+            Ajson('提交成功!','0000', $remarks);
+        } else{
+            Ajson('提交失败!','0001');
+        }
     }
 
 }

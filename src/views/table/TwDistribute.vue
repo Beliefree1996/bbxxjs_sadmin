@@ -3,7 +3,7 @@
         <div class="filter-container">
             <el-col :span="16" class="table_info">
                 <span class="info_item">号码表名称：{{table_name}}</span>
-                <span class="info_item" style="text-align: center;">总号码数：{{table_znum}}</span>
+                <!--<span class="info_item" style="text-align: center;">总号码数：{{table_znum}}</span>-->
                 <span class="info_item">剩余：{{table_snum}}</span>
             </el-col>
 
@@ -26,6 +26,7 @@
                 <el-table-column align="center" type="selection" width="55"></el-table-column>
                 <el-table-column align="center" type="index" label="序号" width="66"></el-table-column>
                 <el-table-column align="center" prop="username" label="业务员名字"></el-table-column>
+                <el-table-column align="center" prop="syhm" label="剩余号码"></el-table-column>
                 <el-table-column align="center" label="操作" width="120" fixed="right">
                     <template slot-scope="scope">
                         <el-button size="small" @click="distribute_phone(scope.$index, scope.row)">分配</el-button>
@@ -200,14 +201,16 @@
                         const h = _this.$createElement;
                         _this.$notify({
                             title: '分配成功',
-                            message: h('i', {style: 'color: teal'}, '号码分配成功')
+                            message: h('i', {style: 'color: teal'}, '号码分配成功'),
                         });
                         _this.disnum = null;
                         _this.getTableInfo();
+                        _this.isDistributing = false;
                     }else{
                         _this.$alert('号码分配失败，请重试', '分配失败', {
                             confirmButtonText: '确定'
                         });
+                        _this.isDistributing = false;
                     }
                 }).catch(err => {
                     _this.isDistributing = true;

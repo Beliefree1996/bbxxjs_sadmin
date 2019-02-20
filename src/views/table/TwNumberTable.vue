@@ -65,7 +65,7 @@
             <el-table-column align="center" type="index" width="66" label="序号" fixed="left"></el-table-column>
             <el-table-column align="center" prop="name" min-width="160" label="批次名称"></el-table-column>
             <el-table-column align="center" prop="user" min-width="160" label="导入者"></el-table-column>
-            <el-table-column align="center" prop="znum" min-width="100" label="行数" sortable></el-table-column>
+            <!--<el-table-column align="center" prop="znum" min-width="100" label="行数" sortable></el-table-column>-->
             <el-table-column align="center" prop="snum" min-width="100" label="剩余行数" sortable></el-table-column>
             <el-table-column align="center" prop="dateline" min-width="160" label="导入时间" sortable></el-table-column>
             <el-table-column align="center" label="操作" width="100" fixed="right">
