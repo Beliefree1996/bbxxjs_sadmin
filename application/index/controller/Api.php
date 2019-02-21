@@ -614,7 +614,7 @@ class Api extends Base
                     if ($t == "d") {
                         $cha = $num->whereBetweenTime('calldate', $starttime)->whereIn("status", $vacant_array)->select();
                     } elseif ($t == "e") {
-                        $cha = $num->whereBetweenTime('calldate', $starttime)->where("duration", ">", 0)->where("bill", 0)->where("hangupcause", "NORMAL_CLEARING")->select();
+                        $cha = $num->whereBetweenTime('calldate', $starttime)->where("bill", 0)->select();
                     } elseif ($t == "f") {
                         $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->whereBetweenTime('a.calldate', $starttime)->where("b.type", "<>", "a")->where("b.type", "<>", "b")->where('a.state', 10)->where('b.zid', $v["id"])->select();
                     } else {
@@ -634,7 +634,7 @@ class Api extends Base
                     if ($t == "d") {
                         $cha = $num->where($where)->whereIn("status", $vacant_array)->select();
                     } elseif ($t == "e") {
-                        $cha = $num->where($where)->where("duration", ">", 0)->where("bill", 0)->where("hangupcause", "NORMAL_CLEARING")->select();
+                        $cha = $num->where($where)->where("bill", 0)->select();
                     } elseif ($t == "f") {
                         $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->where($where2)->where("b.type", "<>", "a")->where("b.type", "<>", "b")->where('a.state', 10)->where('b.zid', $v["id"])->select();
                     } else {
@@ -645,7 +645,7 @@ class Api extends Base
                     if ($t == "d") {
                         $cha = $num->whereTime('calldate', 'today')->whereIn("status", $vacant_array)->select();
                     } elseif ($t == "e") {
-                        $cha = $num->whereTime('calldate', 'today')->where("duration", ">", 0)->where("bill", 0)->where("hangupcause", "NORMAL_CLEARING")->select();
+                        $cha = $num->whereTime('calldate', 'today')->where("bill", 0)->select();
                     } elseif ($t == "f") {
                         $cha = $num->alias('a')->leftJoin('bbxxjs.bb_crm_usertype b', 'a.callid = b.callid')->whereTime('a.calldate', 'today')->where("b.type", "<>", "a")->where("b.type", "<>", "b")->where('a.state', 10)->where('b.zid', $v["id"])->select();
                     } else {

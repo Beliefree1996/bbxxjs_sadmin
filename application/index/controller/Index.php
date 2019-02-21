@@ -371,10 +371,12 @@ class Index extends Base
                     $sip = json_decode($info["setting"],true);
                     $money = getcallmoney($sip["sip"]);
                     $rs[$v]["callmoney"] = $money["callmoney"];
+                    $rs[$v]["password"] = $money["password"];
+                    $rs[$v]["e164s"] = $money["e164s"];
                 }else{
                     $rs[$v]["callmoney"] = 0;
                 }
-                $syhm = CrmMobile::where("aid",$a["id"])->where("isdel",0)->count();
+                $syhm = CrmMobile::where("aid",$a["id"])->where("zid",0)->where("isdel",0)->count();
                 $rs[$v]["syhm"] = $syhm;
             }
             $re['rows']=$rs;
@@ -530,19 +532,20 @@ class Index extends Base
     // 获取报表信息
     public function countdatalist(){
 //        $aid = Cookie::get('aid');
-        $s = input('post.s');
-        $p = input('post.p');
+//        $s = input('post.s');
+//        $p = input('post.p');
         $aid = input('post.aid');
         $time = input('post.time');
-        if ($s == 1) {
-            $s = 0;
-        } else {
-            $s = ($s - 1) * $p;
-        }
+//        if ($s == 1) {
+//            $s = 0;
+//        } else {
+//            $s = ($s - 1) * $p;
+//        }
 
 
         $res['rows'] = array();
-        $robot = Task::where("aid",$aid)->select();
+//        $robot = Task::where("aid",$aid)->select();
+        $robot = Task::where("aid",$aid)->where("zid","<>",0)->select();
         $rs = User::where("id",$aid)->find();
         $rs2 = SeatWx::where("aid",$aid)->whereBetweenTime('dateline', $time)->find();
 
@@ -651,5 +654,10 @@ class Index extends Base
             Ajson('提交失败!','0001');
         }
     }
+
+//    public function lishi(){
+//        CrmMobile::where("sid", 1)->where("aid",0)->where("isdel",1)->delete();
+//        Ajson('执行成功!','0000');
+//    }
 
 }
