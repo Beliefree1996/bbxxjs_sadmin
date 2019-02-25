@@ -20,7 +20,7 @@
             </el-col>
 
             <!--列表-->
-            <el-table :data="table_list" max-height="640" highlight-current-row  v-loading="tableLoading" border
+            <el-table :data="table_list"  class="auto_table" height="100%" v-loading="tableLoading" border
                       style="width: 100%;" @selection-change="handleSelectionChange">
                 <el-table-column align="center" type="selection" width="55"></el-table-column>
                 <el-table-column align="center" type="index" label="序号" width="66"></el-table-column>
@@ -33,12 +33,18 @@
                     </template>
                 </el-table-column>
             </el-table>
+
             <!--页码条-->
             <el-col :span="24" class="toolbar" style="margin-top: 10px">
                 <el-button type="primary" :disabled="this.multipleSelection.length===0" @click="groupDistribute_charge">批量设置
                 </el-button>
                 <!--<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="pagesize"-->
                                <!--:total="total" style="float:right;"></el-pagination>-->
+            </el-col>
+            <el-col :span="24" class="selectAdminView" style="margin-top: 20px">
+                   <span v-show="multipleSelection.length !== 0" style="color: #555;margin-right: 10px">选中的管理员:
+                   </span> <span class="selectAdminName" v-for="item in multipleSelection">
+                    {{item.username}}</span>
             </el-col>
             <!--分配弹窗-->
             <el-dialog title="分配话费" :visible.sync="distribute_dialog" center>
@@ -234,5 +240,39 @@
         position: absolute;
         right: 15px;
         top: 10px;
+    }
+    .selectAdminView {
+        overflow: auto;
+        white-space: nowrap;
+        vertical-align: middle;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 40px;
+    }
+
+    .selectAdminName {
+        margin-right: 5px;
+        padding: 3px 10px;
+        background-color: #3a8ee6;
+        color: white;
+        border-radius: 5px;
+    }
+
+    .filter-container{
+        height: calc(100vh - 84px - 40px);
+    }
+
+    .filter-container:after{
+        content: '';
+        height: 0;
+        width: 0;
+        clear: both;
+        display: block;
+    }
+
+    .auto_table{
+        max-height: calc(100% - 144px);
+        overflow: auto;
     }
 </style>

@@ -21,12 +21,12 @@
             <!--</el-col>-->
 
             <!--列表-->
-            <el-table :data="table_list" max-height="640" highlight-current-row  v-loading="tableLoading" border
+            <el-table :data="table_list" class="auto_table" height="100%" v-loading="tableLoading" border
                       style="width: 100%;" @selection-change="handleSelectionChange">
                 <el-table-column align="center" type="selection" width="55"></el-table-column>
                 <el-table-column align="center" type="index" label="序号" width="66"></el-table-column>
                 <el-table-column align="center" prop="username" label="业务员名字"></el-table-column>
-                <el-table-column align="center" prop="syhm" label="剩余号码"></el-table-column>
+                <el-table-column align="center" prop="syhm" label="未分配号码"></el-table-column>
                 <el-table-column align="center" label="操作" width="120" fixed="right">
                     <template slot-scope="scope">
                         <el-button size="small" @click="distribute_phone(scope.$index, scope.row)">分配</el-button>
@@ -39,6 +39,11 @@
                 </el-button>
                 <!--<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="pagesize"-->
                                <!--:total="total" style="float:right;"></el-pagination>-->
+            </el-col>
+            <el-col :span="24" class="selectAdminView" style="margin-top: 20px">
+                   <span v-show="multipleSelection.length !== 0" style="color: #555;margin-right: 10px">选中的管理员:
+                   </span> <span class="selectAdminName" v-for="item in multipleSelection">
+                    {{item.username}}</span>
             </el-col>
             <!--分配弹窗-->
             <el-dialog title="分配号码" :visible.sync="distribute_dialog" center>
@@ -204,8 +209,9 @@
                             message: h('i', {style: 'color: teal'}, '号码分配成功'),
                         });
                         _this.disnum = null;
-                        _this.getTableInfo();
                         _this.isDistributing = false;
+                        _this.getTableInfo();
+                        _this.getTable();
                     }else{
                         _this.$alert('号码分配失败，请重试', '分配失败', {
                             confirmButtonText: '确定'
@@ -237,5 +243,40 @@
         position: absolute;
         right: 15px;
         top: 10px;
+    }
+
+    .selectAdminView {
+        overflow: auto;
+        white-space: nowrap;
+        vertical-align: middle;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 40px;
+    }
+
+    .selectAdminName {
+        margin-right: 5px;
+        padding: 3px 10px;
+        background-color: #3a8ee6;
+        color: white;
+        border-radius: 5px;
+    }
+
+    .filter-container{
+        height: calc(100vh - 84px - 40px);
+    }
+
+    .filter-container:after{
+        content: '';
+        height: 0;
+        width: 0;
+        clear: both;
+        display: block;
+    }
+
+    .auto_table{
+        max-height: calc(100% - 96px);
+        overflow: auto;
     }
 </style>

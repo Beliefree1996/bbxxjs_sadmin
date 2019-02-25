@@ -13,14 +13,14 @@
                     </el-form-item>
                 </el-form>
             </el-row>
-            <el-row>
-                <br/>
-            </el-row>
             <!--号码表导入-->
             <el-button type="primary" @click="add_number_table = true">导入号码表</el-button>
             <el-button type="primary">
                 <a href="/static/file/demo.xlsx" style="color: #fff;text-decoration: none">下载示例</a>
             </el-button>
+            <el-row>
+                <br/>
+            </el-row>
             <!--导入弹窗-->
             <el-dialog title="导入号码表" :visible.sync="add_number_table" center>
                 <div class="first">
@@ -56,33 +56,33 @@
                     <!--<el-button  type="primary" v-on:click="getTable">查询</el-button>-->
                 <!--</el-form-item>-->
             <!--</el-form>-->
-        </div>
 
-        <!--列表-->
-        <el-table :data="table_list" max-height="640" highlight-current-row v-loading="tableLoading"
-                  @selection-change="selsChange" border style="width: 100%;" :header-cell-style="tableHeaderColor">
-            <!--<el-table-column type="selection" width="55" label="全选"></el-table-column>-->
-            <el-table-column align="center" type="index" width="66" label="序号" fixed="left"></el-table-column>
-            <el-table-column align="center" prop="name" min-width="160" label="批次名称"></el-table-column>
-            <el-table-column align="center" prop="user" min-width="160" label="导入者"></el-table-column>
-            <!--<el-table-column align="center" prop="znum" min-width="100" label="行数" sortable></el-table-column>-->
-            <el-table-column align="center" prop="snum" min-width="100" label="剩余行数" sortable></el-table-column>
-            <el-table-column align="center" prop="dateline" min-width="160" label="导入时间" sortable></el-table-column>
-            <el-table-column align="center" label="操作" width="100" fixed="right">
-                <template slot-scope="scope">
-                    <router-link :to="'/table/TwDistribute/'+scope.row.id">
-                        <el-button type="text" size="small">分配</el-button>
-                    </router-link>
-                    <el-button type="text" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <!--页码条-->
-        <el-col :span="24" class="toolbar" style="margin-top: 10px">
-            <!--<el-button type="primary" :disabled="this.sels.length===0"> 批量分配 </el-button>-->
-            <!--<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="pagesize"-->
-                           <!--:total="total" style="float:right;"></el-pagination>-->
-        </el-col>
+            <!--列表-->
+            <el-table :data="table_list" class="auto_table" height="100%" v-loading="tableLoading"
+                      @selection-change="selsChange" border style="width: 100%;" :header-cell-style="tableHeaderColor">
+                <!--<el-table-column type="selection" width="55" label="全选"></el-table-column>-->
+                <el-table-column align="center" type="index" width="66" label="序号" fixed="left"></el-table-column>
+                <el-table-column align="center" prop="name" min-width="160" label="批次名称"></el-table-column>
+                <el-table-column align="center" prop="user" min-width="160" label="导入者"></el-table-column>
+                <!--<el-table-column align="center" prop="znum" min-width="100" label="行数" sortable></el-table-column>-->
+                <el-table-column align="center" prop="snum" min-width="100" label="剩余行数" sortable></el-table-column>
+                <el-table-column align="center" prop="dateline" min-width="160" label="导入时间" sortable></el-table-column>
+                <el-table-column align="center" label="操作" width="100" fixed="right">
+                    <template slot-scope="scope">
+                        <router-link :to="'/table/TwDistribute/'+scope.row.id">
+                            <el-button type="text" size="small">分配</el-button>
+                        </router-link>
+                        <el-button type="text" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--页码条-->
+            <el-col :span="24" class="toolbar" style="margin-top: 10px">
+                <!--<el-button type="primary" :disabled="this.sels.length===0"> 批量分配 </el-button>-->
+                <!--<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="pagesize"-->
+                               <!--:total="total" style="float:right;"></el-pagination>-->
+            </el-col>
+        </div>
     </div>
 </template>
 
@@ -231,19 +231,20 @@
         display: inline-block;
     }
 
-    .el-table {
-        border-radius: 5px;
+    .filter-container{
+        height: calc(100vh - 84px - 40px);
     }
 
-    .el-form-item {
-        margin: 0;
+    .filter-container:after{
+        content: '';
+        height: 0;
+        width: 0;
+        clear: both;
+        display: block;
     }
 
-    .backFileListClass {
-        cursor: pointer;
-    }
-
-    .backFileListClass:hover {
-        color: #3a8ee6;
+    .auto_table{
+        max-height: calc(100% - 112px);
+        overflow: auto;
     }
 </style>

@@ -65,9 +65,9 @@
             </el-row>
 
             <!--列表-->
-            <el-table :data="table_list" max-height="640" highlight-current-row  v-loading="tableLoading" border
+            <el-table :data="table_list" class="auto_table" height="100%" v-loading="tableLoading" border
                       style="width: 100%;" @selection-change="handleSelectionChange">
-                <el-table-column align="center" type="selection" width="55"></el-table-column>
+                <!--<el-table-column align="center" type="selection" width="55"></el-table-column>-->
                 <el-table-column align="center" type="index" label="序号" width="66"></el-table-column>
                 <el-table-column align="center" prop="username" label="管理员名字"></el-table-column>
                 <el-table-column align="center" prop="amount" label="机器人数量"></el-table-column>
@@ -239,5 +239,22 @@
         position: absolute;
         right: 15px;
         top: 10px;
+    }
+
+    .filter-container{
+        height: calc(100vh - 84px - 40px);
+    }
+
+    .filter-container:after{
+        content: '';
+        height: 0;
+        width: 0;
+        clear: both;
+        display: block;
+    }
+
+    .auto_table{
+        max-height: calc(100% - 224px);
+        overflow: auto;
     }
 </style>

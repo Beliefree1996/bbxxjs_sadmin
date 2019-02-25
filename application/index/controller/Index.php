@@ -315,16 +315,6 @@ class Index extends Base
         }
     }
 
-    public function numbertable()
-    {
-        return $this->fetch();
-    }
-
-    public function distribute()
-    {
-        return $this->fetch();
-    }
-
 //    // 获取话费余额
 //    public function getcallmoney()
 //    {
@@ -366,6 +356,45 @@ class Index extends Base
 
         if (count($rs->toArray())>0){
             foreach ($rs as $v=>$a){
+                $syhm = CrmMobile::where("aid",$a["id"])->where("zid",0)->where("isdel",0)->count();
+                $rs[$v]["syhm"] = $syhm;
+            }
+            $re['rows']=$rs;
+        }else{
+            $re['rows'] = [];
+        }
+
+        Ajson('查询成功!','0000',$re);
+    }
+
+    // 余额信息
+    public function yeuserlist()
+    {
+//        $s = input('post.s');
+//        $p = input('post.p');
+        $username = trim(input('post.name'));
+        $token = input('post.token');
+        $sid = Cache::get($token);
+
+//        if ($s == 1) {
+//            $s = 0;
+//        } else {
+//            $s = ($s - 1) * $p;
+//        }
+
+
+        if (empty($username)) {
+            $rs = User::where("sid",$sid)->order('id', 'asc')->select();
+//            $rs = User::where("sid",$sid)->order('id', 'asc')->limit($s, $p)->select();
+//            $re['total'] = User::where("sid",$sid)->count();
+        } else {
+            $rs = User::where("sid",$sid)->where('username', 'like', '%' . $username . '%')->order('id', 'asc')->select();
+//            $rs = User::where("sid",$sid)->where('username', 'like', '%' . $username . '%')->order('id', 'asc')->limit($s, $p)->select();
+//            $re['total'] = User::where("sid",$sid)->where('username', 'like', '%' . $username . '%')->count();
+        }
+
+        if (count($rs->toArray())>0){
+            foreach ($rs as $v=>$a){
                 $info = UserBuy::where("uid",$a["id"])->where("cid",1)->find();
                 if (!empty($info)){
                     $sip = json_decode($info["setting"],true);
@@ -376,8 +405,6 @@ class Index extends Base
                 }else{
                     $rs[$v]["callmoney"] = 0;
                 }
-                $syhm = CrmMobile::where("aid",$a["id"])->where("zid",0)->where("isdel",0)->count();
-                $rs[$v]["syhm"] = $syhm;
             }
             $re['rows']=$rs;
         }else{
@@ -435,7 +462,7 @@ class Index extends Base
         $id = input("post.id");
 
         //CrmMobile::where("pid",$id)->delete();
-        CrmMobile::where("id",$id)->setField("isdel",1);
+        CrmMobile::where("pid",$id)->setField("isdel",1);
         CrmMobilePc::where("id",$id)->setField("isdel",1);
         //CrmMobilePc::where("id",$id)->delete();
 
@@ -655,8 +682,8 @@ class Index extends Base
         }
     }
 
-//    public function lishi(){
-//        CrmMobile::where("sid", 1)->where("aid",0)->where("isdel",1)->delete();
+//    public function linshi(){
+//        CrmMobile::where("isdel",1)->delete();
 //        Ajson('执行成功!','0000');
 //    }
 

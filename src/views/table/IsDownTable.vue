@@ -18,7 +18,7 @@
             </el-row>
 
             <!--列表-->
-            <el-table :data="table_list" max-height="640" highlight-current-row v-loading="tableLoading"
+            <el-table :data="table_list" class="auto_table" height="100%" v-loading="tableLoading"
                       @selection-change="selsChange" border style="width: 100%;" :header-cell-style="tableHeaderColor">
                 <!--<el-table-column type="selection" width="55" label="全选"></el-table-column>-->
                 <el-table-column align="center" type="index" width="66" label="序号" fixed="left"></el-table-column>
@@ -115,6 +115,7 @@
                     const res = response.data;
                     if (res.code == '0000') {
                         this.table_list = res.data.rows;
+                        console.log(this.table_list)
                         // this.total = res.data.total;
                     } else {
                         this.$message.error(res.msg);
@@ -135,10 +136,10 @@
                     const res = response.data;
                     if (res.code == '0000') {
                         if (scope.isdown === 1) {
-                            _this.$message.success("下载权限关闭完成！");
+                            _this.$message.success("下载权限 关闭完成！");
                             scope.isdown = 0;
                         } else {
-                            _this.$message.success("下载权限启动完成！");
+                            _this.$message.success("下载权限 开启完成！");
                             scope.isdown = 1;
                         }
                         this.getTable();
@@ -158,10 +159,10 @@
                     const res = response.data;
                     if (res.code == '0000') {
                         if (scope.notshow === 1) {
-                            _this.$message.success("号码全显关闭完成！");
+                            _this.$message.success("号码隐藏 关闭完成！");
                             scope.notshow = 0;
                         } else {
-                            _this.$message.success("号码全显开启完成！");
+                            _this.$message.success("号码隐藏 开启完成！");
                             scope.notshow = 1;
                         }
                         this.getTable();
@@ -195,5 +196,22 @@
 
     .backFileListClass:hover {
         color: #3a8ee6;
+    }
+
+    .filter-container{
+        height: calc(100vh - 84px - 40px);
+    }
+
+    .filter-container:after{
+        content: '';
+        height: 0;
+        width: 0;
+        clear: both;
+        display: block;
+    }
+
+    .auto_table{
+        max-height: calc(100% - 54px);
+        overflow: auto;
     }
 </style>

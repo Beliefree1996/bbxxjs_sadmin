@@ -26,7 +26,7 @@
                 <el-table-column align="center" :label="titledate">
                     <el-table-column align="center" prop="id" width="66" label="序号" fixed="left"></el-table-column>
                     <el-table-column align="center" prop="bumen" min-width="120" label="部门"></el-table-column>
-                    <el-table-column align="center" prop="username" min-width="120" label="业务姓名"></el-table-column>
+                    <el-table-column align="center" prop="username" min-width="120" label="业务员姓名"></el-table-column>
                     <el-table-column align="center" prop="callnum" min-width="120" label="拨打数"></el-table-column>
                     <el-table-column align="center" prop="billnum" min-width="120" label="接通数"></el-table-column>
                     <el-table-column align="center" prop="billlv" min-width="120" label="接通率"></el-table-column>
@@ -51,8 +51,8 @@
             return{
                 CountDataList:[],
                 tableLoading: false,
-                pagesize: 30,
-                page: 1,
+                // pagesize: 30,
+                // page: 1,
                 total: 0,
                 titledate:'',
 
@@ -78,7 +78,7 @@
                         }
                     }],
                     disabledDate(date) { //disabledDate 文档上：设置禁用状态，参数为当前日期，要求返回 Boolean
-                        return date.getTime() >= Date.now();
+                        return date.getTime() >= Date.now() || date.getTime() <= Date.now() - 3600 * 1000 * 24 * 8;
                     }
                 },
                 CallDateTime: '',
@@ -145,8 +145,8 @@
                     Time = year + "-" + month + "-" + strdate;
                 }
                 var params = {
-                    s: this.page,
-                    p: this.pagesize,
+                    // s: this.page,
+                    // p: this.pagesize,
                     aid: this.$route.params.id,
                     time: Time,
                 }
@@ -210,11 +210,11 @@
                 }
             },
             // 点击页码
-            handleCurrentChange(val) {
-                this.page = val;
-                this.getTabeleData();
-            },
-            // 修改table header的背景色
+
+            // 修改table header的背景色        // handleCurrentChange(val) {
+            //     this.page = val;
+            //     this.getTabeleData();
+            // },
             tableHeaderColor({row, column, rowIndex, columnIndex}) {
                 if (rowIndex === 0) {
                     return 'background-color: #f7f7f7;color: #363636;font-weight: 500;'

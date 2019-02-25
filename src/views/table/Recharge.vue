@@ -24,11 +24,13 @@
 
 
             <!--列表-->
-            <el-table :data="table_list" max-height="640" highlight-current-row  v-loading="tableLoading" border
+            <el-table :data="table_list" class="auto_table" height="100%" v-loading="tableLoading" border
                       style="width: 100%;" @selection-change="handleSelectionChange">
                 <el-table-column align="center" type="index" label="序号" width="66"></el-table-column>
                 <el-table-column align="center" prop="username" label="管理员名字"></el-table-column>
                 <el-table-column align="center" prop="callmoney" label="余额"></el-table-column>
+                <el-table-column align="center" prop="e164s" label="账号"></el-table-column>
+                <el-table-column align="center" prop="password" label="密码"></el-table-column>
                 <!--<el-table-column align="center" label="操作" width="120" fixed="right">-->
                     <!--<template slot-scope="scope">-->
                         <!--<el-button size="small" @click="recharge()">充值</el-button>-->
@@ -46,7 +48,7 @@
 
 <script>
     import { getToken, setToken, removeToken } from '@/utils/auth'
-    import { ywuserlist,creckpc,mobilefp } from '@/api/Number'
+    import { yeuserlist,creckpc,mobilefp } from '@/api/Number'
 
     export default {
         name: "Recharge",
@@ -86,7 +88,7 @@
                 this.tableLoading = true;
                 console.log(params);
 
-                ywuserlist(params).then(response => {
+                yeuserlist(params).then(response => {
                     console.log(response);
                     const res = response.data;
                     console.log(res)
@@ -115,5 +117,22 @@
         position: absolute;
         right: 15px;
         top: 10px;
+    }
+
+    .filter-container{
+        height: calc(100vh - 84px - 40px);
+    }
+
+    .filter-container:after{
+        content: '';
+        height: 0;
+        width: 0;
+        clear: both;
+        display: block;
+    }
+
+    .auto_table{
+        max-height: calc(100% - 116px);
+        overflow: auto;
     }
 </style>
