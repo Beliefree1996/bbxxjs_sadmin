@@ -60,7 +60,7 @@
                     <el-upload :limit="1" class="upload_table" ref="transfor" action="http://sai.bbxxjs.com/transformexl"
                                :data="uploadfileParams"
                                :file-list="fileList"
-                               :on-success="transform_table" :on-error="unupload_table"
+                               :on-success="transform_table" :on-error="untransform_table"
                                :auto-upload="false">
                         <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
                     </el-upload>
@@ -178,7 +178,6 @@
             },
             // 提取成功
             transform_table: function (res, file, fileList) {
-                var _this = this;
                 if (res.code == '0000') {
                     this.$message.success("号码提取成功！");
                     this.isdown = true;
@@ -188,6 +187,17 @@
                 }
                 console.log(this.filename);
                 console.log(this.isdown);
+            },
+            // 上传失败
+            untransform_table: function (err, file, fileList) {
+                var _this = this;
+                this.$confirm('文件上传失败，请重新上传', '上传失败', {
+                    confirmButtonText: '确定',
+                    showCancelButton: false,
+                    callback: action => {
+                        _this.fileList = [];
+                    }
+                });
             },
             ////上传excel号码表
             submitUpload() {

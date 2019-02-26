@@ -680,8 +680,6 @@ class Api extends Base
     public function transformexl()
     {
         $file = request()->file('file');
-        $token = input("post.token");
-        $sid = Cache::get($token);;
 
         if ($file) {
             $info = $file->move('../uploads/trans/');
@@ -720,6 +718,7 @@ class Api extends Base
 
         $excel_array = $objPHPExcel->getsheet(0)->toArray();   //转换为数组格式
         array_shift($excel_array);  //删除第一个数组(标题);
+        array_shift($excel_array);  //删除第二个数组;
         //file_put_contents(Env::get('runtime_path')."log/test.txt", "exltomysql@".json_encode($excel_array), FILE_APPEND);
 
         //file_put_contents(Env::get('runtime_path')."log/test.txt", json_encode($excel_array), FILE_APPEND);
@@ -751,10 +750,10 @@ class Api extends Base
             ->setCellValue('A' . 1, "企业联系电话");
         // 文件行数
         $j = 2;
-        $flag = 1;
+        $colnum = count($excel_array[1]);
 
-        foreach ($excel_array as $k => $v) {
-            if($flag>1) {
+        if($colnum >= 11) {
+            foreach ($excel_array as $k => $v) {
                 $num = trim($v[10]);
                 if (!empty($num)) {
                     $objPHPExcel->setActiveSheetIndex(0)
@@ -763,43 +762,43 @@ class Api extends Base
                     $j++;
                 }
                 $mobile = trim($v[11]);
-                if(!empty($mobile)) {
+                if (!empty($mobile)) {
                     if (mb_substr_count($mobile, ';') == 1) {
-                        $mobile = str_replace(";","",$mobile);
+                        $mobile = str_replace(";", "", $mobile);
                         $objPHPExcel->setActiveSheetIndex(0)
                             //Excel的第A列，uid是你查出数组的键值，下面以此类推
                             ->setCellValue('A' . $j, $mobile);
                         $j++;
                     } else if (mb_substr_count($mobile, ';') == 2) {
                         $pstart = strpos($mobile, ';');
-                        $mobile1 = substr($mobile,0,$pstart);
+                        $mobile1 = substr($mobile, 0, $pstart);
                         $objPHPExcel->setActiveSheetIndex(0)
                             //Excel的第A列，uid是你查出数组的键值，下面以此类推
                             ->setCellValue('A' . $j, $mobile1);
                         $j++;
-                        $mobile2 = substr($mobile,$pstart+1,-1);
+                        $mobile2 = substr($mobile, $pstart + 1, -1);
                         $objPHPExcel->setActiveSheetIndex(0)
                             //Excel的第A列，uid是你查出数组的键值，下面以此类推
                             ->setCellValue('A' . $j, $mobile2);
                         $j++;
-                    } else if (mb_substr_count($mobile, ';') == 3){
+                    } else if (mb_substr_count($mobile, ';') == 3) {
                         $pstart = strpos($mobile, ';');
-                        $mobile1 = substr($mobile,0,$pstart);
+                        $mobile1 = substr($mobile, 0, $pstart);
                         $objPHPExcel->setActiveSheetIndex(0)
                             //Excel的第A列，uid是你查出数组的键值，下面以此类推
                             ->setCellValue('A' . $j, $mobile1);
                         $j++;
 
-                        $mobile1 = substr($mobile,$pstart+1);
+                        $mobile1 = substr($mobile, $pstart + 1);
 
                         $pstart = strpos($mobile1, ';');
-                        $mobile2 = substr($mobile1,0,$pstart);
+                        $mobile2 = substr($mobile1, 0, $pstart);
                         $objPHPExcel->setActiveSheetIndex(0)
                             //Excel的第A列，uid是你查出数组的键值，下面以此类推
                             ->setCellValue('A' . $j, $mobile2);
                         $j++;;
 
-                        $mobile3 = substr($mobile1,$pstart+1,-1);
+                        $mobile3 = substr($mobile1, $pstart + 1, -1);
                         $objPHPExcel->setActiveSheetIndex(0)
                             //Excel的第A列，uid是你查出数组的键值，下面以此类推
                             ->setCellValue('A' . $j, $mobile3);
@@ -807,12 +806,14 @@ class Api extends Base
                     }
                 }
             }
-            $flag++;
+            $filePath = Env::get('runtime_path') . "transdown/" . $filename;
+            $objWriter = PHPExcel_IOFactory:: createWriter($objPHPExcel, 'Excel2007');
+            $objWriter->save($filePath);
+            Ajson('提取成功!', '0000',$filename);
+        }else{
+            Ajson('提取失败!', '0001');
         }
 
-        $filePath = Env::get('runtime_path') . "transdown/" . $filename;
-        $objWriter = PHPExcel_IOFactory:: createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save($filePath);
 
 //        $this->doRequest('sai.bbxxjs.com', '/exltomysql', array(
 //                'filename' => $filename,
@@ -821,8 +822,6 @@ class Api extends Base
 //            )
 //        );
         //echo $fp;
-        Ajson('提取成功!', '0000',$filename);
-        Ajson('提取失败!', '0001');
 //        //发出301头部
 //        header('HTTP/1.1 301 Moved Permanently');
 //        //跳转到你希望的地址格式
