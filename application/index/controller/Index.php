@@ -121,6 +121,7 @@ class Index extends Base
         Ajson('导入成功!', '0000');
     }
 
+
     public function doRequest($host, $path, $param = array())
     {
         $query = isset($param) ? http_build_query($param) : '';

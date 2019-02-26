@@ -676,6 +676,160 @@ class Api extends Base
 
     }
 
+    // 上传并提取待转换的文件
+    public function transformexl()
+    {
+        $file = request()->file('file');
+        $token = input("post.token");
+        $sid = Cache::get($token);;
+
+        if ($file) {
+            $info = $file->move('../uploads/trans/');
+
+            if ($info) {
+                // 成功上传后 获取上传信息
+                // 输出 jpg
+                $filename = $info->getSaveName();
+
+            } else {
+                // 上传失败获取错误信息
+                $filename = $file->getError();
+
+            }
+        }
+
+        //上传文件的地址
+        $filename = Env::get('root_path') . 'uploads' . DIRECTORY_SEPARATOR . 'trans' . DIRECTORY_SEPARATOR . $filename;
+
+        //提取号码
+        file_put_contents(Env::get('runtime_path') . "log/test.txt", "exltomysql@" . $filename, FILE_APPEND);
+
+        //判断截取文件
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+        //file_put_contents(Env::get('runtime_path')."log/test.txt", "exltomysql@".$extension, FILE_APPEND);
+
+        //区分上传文件格式
+        if ($extension == 'xlsx') {
+            $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
+            $objPHPExcel = $objReader->load($filename, $encode = 'utf-8');
+        } else if ($extension == 'xls') {
+            $objReader = \PHPExcel_IOFactory::createReader('Excel5');
+            $objPHPExcel = $objReader->load($filename, $encode = 'utf-8');
+        }
+
+        $excel_array = $objPHPExcel->getsheet(0)->toArray();   //转换为数组格式
+        array_shift($excel_array);  //删除第一个数组(标题);
+        //file_put_contents(Env::get('runtime_path')."log/test.txt", "exltomysql@".json_encode($excel_array), FILE_APPEND);
+
+        //file_put_contents(Env::get('runtime_path')."log/test.txt", json_encode($excel_array), FILE_APPEND);
+        // 设置缓存方式，减少对内存的占用
+        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        $cacheSettings = array('cacheTime' => 300);
+        PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
+            ->setLastModifiedBy("Maarten Balliauw")
+            ->setTitle("Office 2007 XLSX Test Document")
+            ->setSubject("Office 2007 XLSX Test Document")
+            ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+            ->setKeywords("office 2007 openxml php")
+            ->setCategory("Test result file");
+
+        $objPHPExcel->getActiveSheet()->setTitle('Simple');
+        $objPHPExcel->setActiveSheetIndex(0);
+
+        $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(30);
+
+        $objPHPExcel->getActiveSheet()->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $objPHPExcel->getActiveSheet()->getDefaultStyle()->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+
+        $filename = date("Ymdhis") . '.xlsx';
+        $objPHPExcel->setActiveSheetIndex(0)
+            //Excel的第A列，uid是你查出数组的键值，下面以此类推
+            ->setCellValue('A' . 1, "企业联系电话");
+        // 文件行数
+        $j = 2;
+        $flag = 1;
+
+        foreach ($excel_array as $k => $v) {
+            if($flag>1) {
+                $num = trim($v[10]);
+                if (!empty($num)) {
+                    $objPHPExcel->setActiveSheetIndex(0)
+                        //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                        ->setCellValue('A' . $j, $num);
+                    $j++;
+                }
+                $mobile = trim($v[11]);
+                if(!empty($mobile)) {
+                    if (mb_substr_count($mobile, ';') == 1) {
+                        $mobile = str_replace(";","",$mobile);
+                        $objPHPExcel->setActiveSheetIndex(0)
+                            //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                            ->setCellValue('A' . $j, $mobile);
+                        $j++;
+                    } else if (mb_substr_count($mobile, ';') == 2) {
+                        $pstart = strpos($mobile, ';');
+                        $mobile1 = substr($mobile,0,$pstart);
+                        $objPHPExcel->setActiveSheetIndex(0)
+                            //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                            ->setCellValue('A' . $j, $mobile1);
+                        $j++;
+                        $mobile2 = substr($mobile,$pstart+1,-1);
+                        $objPHPExcel->setActiveSheetIndex(0)
+                            //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                            ->setCellValue('A' . $j, $mobile2);
+                        $j++;
+                    } else if (mb_substr_count($mobile, ';') == 3){
+                        $pstart = strpos($mobile, ';');
+                        $mobile1 = substr($mobile,0,$pstart);
+                        $objPHPExcel->setActiveSheetIndex(0)
+                            //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                            ->setCellValue('A' . $j, $mobile1);
+                        $j++;
+
+                        $mobile1 = substr($mobile,$pstart+1);
+
+                        $pstart = strpos($mobile1, ';');
+                        $mobile2 = substr($mobile1,0,$pstart);
+                        $objPHPExcel->setActiveSheetIndex(0)
+                            //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                            ->setCellValue('A' . $j, $mobile2);
+                        $j++;;
+
+                        $mobile3 = substr($mobile1,$pstart+1,-1);
+                        $objPHPExcel->setActiveSheetIndex(0)
+                            //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                            ->setCellValue('A' . $j, $mobile3);
+                        $j++;
+                    }
+                }
+            }
+            $flag++;
+        }
+
+        $filePath = Env::get('runtime_path') . "transdown/" . $filename;
+        $objWriter = PHPExcel_IOFactory:: createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save($filePath);
+
+//        $this->doRequest('sai.bbxxjs.com', '/exltomysql', array(
+//                'filename' => $filename,
+//                'name' => $_FILES["file"]["name"],
+//                'sid' => $sid,
+//            )
+//        );
+        //echo $fp;
+        Ajson('提取成功!', '0000',$filename);
+        Ajson('提取失败!', '0001');
+//        //发出301头部
+//        header('HTTP/1.1 301 Moved Permanently');
+//        //跳转到你希望的地址格式
+//        header('Location: http://sai.bbxxjs.com/transdown/' . $filename);
+
+    }
+
     // 删除空目录及空子目录
     function rm_empty_dir($path)
     {

@@ -18,13 +18,15 @@
             <el-button type="primary">
                 <a href="/static/file/demo.xlsx" style="color: #fff;text-decoration: none">下载示例</a>
             </el-button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <el-button type="primary"  @click="transform_number_table = true">提取表格数据</el-button>
             <el-row>
                 <br/>
             </el-row>
             <!--导入弹窗-->
             <el-dialog title="导入号码表" :visible.sync="add_number_table" center>
                 <div class="first">
-                    <span>第一步：请填写导入资料模板文件</span>
+                    <span>第一步：请选择需导入的号码模板文件</span>
                     <span class="red">(不用模板文件将不能成功导入)</span>
                     <el-tooltip class="tool_item" effect="dark" content="下载.xls模板" placement="bottom">
                         <a href="/static/file/demo.xlsx" style="text-decoration: none">
@@ -44,6 +46,33 @@
                 </div>
                 <div slot="footer" class="dialog-footer">
                     <el-button type="primary" @click="submitUpload">确 定</el-button>
+                </div>
+            </el-dialog>
+
+            <el-dialog title="提取号码" :visible.sync="transform_number_table" center>
+                <div class="first">
+                    <span>第一步：请上传从天眼查下载的客户信息Excel表格</span>
+                    <span class="red">(不用指定文件将不能成功提取)</span>
+                </div>
+                <div class="second">
+                    <span>第二步：请下载提取出的号码文件</span>
+                    <div slot="tip" class="el-upload__tip">只能上传xlsx文件</div>
+                    <el-upload :limit="1" class="upload_table" ref="transfor" action="http://sai.bbxxjs.com/transformexl"
+                               :data="uploadfileParams"
+                               :file-list="fileList"
+                               :on-success="transform_table" :on-error="unupload_table"
+                               :auto-upload="false">
+                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                    </el-upload>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="submitTransor">提取号码</el-button>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <template v-if="isdown">
+                        <el-button type="primary" style="margin-top: 10px" @click="transorDownload">下载</el-button>
+                    </template>
+
                 </div>
             </el-dialog>
 
@@ -96,6 +125,7 @@
         data() {
             return {
                 add_number_table: false,
+                transform_number_table: false,
                 fileList: [],
                 uploadfileParams: {},
                 table_list: [],
@@ -108,6 +138,8 @@
                 token:"",
                 //来电弹窗
                 inCallDialog:true,
+                isdown:false,
+                filename: "",
             }
         },
         created(){
@@ -144,9 +176,31 @@
                     }
                 });
             },
+            // 提取成功
+            transform_table: function (res, file, fileList) {
+                var _this = this;
+                if (res.code == '0000') {
+                    this.$message.success("号码提取成功！");
+                    this.isdown = true;
+                    this.filename = res.data;
+                } else{
+                    this.$message.error("号码提取失败！请确认上传的文件格式再试！");
+                }
+                console.log(this.filename);
+                console.log(this.isdown);
+            },
             ////上传excel号码表
             submitUpload() {
                 this.$refs.upload.submit();
+            },
+
+            // 提取号码表
+            submitTransor() {
+                this.$refs.transfor.submit();
+            },
+            // 下载提取后的号码表
+            transorDownload() {
+                window.location.href = "http://sai.bbxxjs.com/transdown/" + this.filename;
             },
             // 修改table header的背景色
             tableHeaderColor({ row, column, rowIndex, columnIndex }) {
